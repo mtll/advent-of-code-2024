@@ -9,7 +9,7 @@
 
 
 (* ::Input:: *)
-(*in=Import["input/2.txt","Data"]//StringSplit//ToExpression;*)
+(*in=ToExpression@StringSplit@ReadList["input/2.txt","String"];*)
 
 
 (* ::Input:: *)
@@ -29,4 +29,4 @@
 
 
 (* ::Input:: *)
-(*Count[in,_?(AnyTrue[Subsets[#,Length[#]-{1,0}],safe]&)]*)
+(*Count[in,_?(AnyTrue[Subsets[#,{Length[#]-1}],safe]&)]*)
