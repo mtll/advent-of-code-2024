@@ -19,12 +19,14 @@
         (not (unsafe nil (- (car diffs)) (mapcar #'- (cdr diffs)) tolerance)))))
 
 (defun solve (path)
-  (loop :for line :in (uiop:read-file-lines path)
-        :for diff = nil
-        :for prev = nil
-        :do (cl-ppcre:do-register-groups ((#'parse-integer i)) ("(\\d+)" line)
-              (when prev (push (- i prev) diff))
-              (setf prev i))
-        :count (safe-p diff) :into part1
-        :count (safe-p diff 1) :into part2
-        :finally (return (values part1 part2))))
+  (with-open-file (s (truename path))
+    (loop :for line = (read-line s nil) :while line
+          :for diff = nil
+          :for prev = nil
+          :do (cl-ppcre:do-register-groups ((#'parse-integer i)) ("(\\d+)" line)
+                (when prev (push (- i prev) diff))
+                (setf prev i))
+          :count (safe-p diff) :into part1
+          :count (safe-p diff 1) :into part2
+          :finally (return (values part1 part2)))))
+
