@@ -1,14 +1,13 @@
 (* ::Package:: *)
 
-(* ::Input:: *)
-(*SetDirectory[NotebookDirectory[]];*)
+SetDirectory[NotebookDirectory[]];
 
 
 (* ::Title:: *)
 (*2024 Day 1*)
 
 
-{i1, i2} = Import["input/1.txt", "Data"]\[Transpose];
+{i1, i2} = Import["../input/1.txt", "Data"]\[Transpose];
 
 
 (* ::Subsection:: *)
