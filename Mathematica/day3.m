@@ -10,19 +10,19 @@ SetDirectory[NotebookDirectory[]];
 in = ReadString["../input/3.txt"];
 
 
-mul[s_] := StringCases[s, "mul("~~(x:DigitCharacter..)~~","~~(y:DigitCharacter..)~~")" -> {x,y}] //
-	ToExpression // Transpose // Apply[Dot]
+eval[exp_] := Times@@ToExpression[exp]
+mul[s_] := StringCases[s, "mul("~~x:NumberString~~","~~y:NumberString~~")" :> eval@{x, y}]
 
 
 (* ::Subsubsection:: *)
 (*Part 1*)
 
 
-mul[in]
+Total@mul[in]
 
 
 (* ::Subsubsection:: *)
 (*Part 2*)
 
 
-Total[mul /@ StringSplit[StringSplit[in, "do()"], "don't()"][[All,1]]]
+Total@Flatten[mul /@ StringSplit[StringSplit[in, "do()"], "don't()"][[All,1]]]
