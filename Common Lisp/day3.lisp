@@ -14,6 +14,6 @@
     (pre:do-register-groups ((#'parse-integer a) (#'parse-integer b) c)
         ("(?:mul\\((\\d{1,3}),(\\d{1,3})\\))|(do\\(\\))|(don't\\(\\))" str)
       (cond (a (next-out part1 (* a b))
-               (next-out part2 (* n (* a b))))
+               (next-out part2 (* n a b)))
             (c (setf n 1))
             (t (setf n 0))))))
