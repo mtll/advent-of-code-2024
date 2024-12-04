@@ -1,0 +1,25 @@
+(defpackage-plus-1:defpackage+ #:aoc2024.day3
+  (:use #:cl #:series-utils #:aoc.utils)
+  (:local-nicknames (#:s #:serapeum)
+                    (#:a #:alexandria)
+                    (#:nt #:named-readtables)
+                    (#:pre #:cl-ppcre))
+  (:export #:solve))
+
+(in-package #:aoc2024.day3)
+
+(s:eval-always (series-utils::install))
+
+(defun solve (path &aux (str (uiop:read-file-string path)))
+  (let ((start)
+        (end 0)
+        (part1 0)
+        (part2 0))
+    (iterate ((re (series "(?s).*?(?:don't\\(\\)|\\Z)" "(?s).*?(?:do\\(\\)|\\Z)"))
+              (n (series 1 0)))
+      (multiple-value-setq (start end) (pre:scan re str :start end))
+      (unless (> end start) (return-from solve (values part1 part2)))
+      (pre:do-register-groups ((#'parse-integer a) (#'parse-integer b))
+          ("mul\\(([0-9]+),([0-9]+)\\)" str nil :start start :end end :sharedp t)
+        (incf part1 (* a b))
+        (incf part2 (* n (* a b)))))))
