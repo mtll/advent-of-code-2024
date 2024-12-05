@@ -1,7 +1,8 @@
 (defpackage-plus-1:defpackage+ #:aoc2024.day3
   (:use #:cl #:series-utils #:aoc.utils)
   (:local-nicknames (#:pre #:cl-ppcre)
-                    (#:a #:alexandria))
+                    (#:a #:alexandria)
+                    (#:s #:serapeum))
   (:export #:solve))
 
 (in-package #:aoc2024.day3)

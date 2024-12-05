@@ -14,4 +14,5 @@
   :components ((:file "series-utils")
                (:file "utils")
                (:file "day2")
-               (:file "day3")))
+               (:file "day3")
+               (:file "day5")))
