@@ -11,15 +11,16 @@
     (pre:do-register-groups ((#'parse-integer a) (#'parse-integer b))
         ("(\\d+)\\|(\\d+)" rules)
       (push a (gethash b table)))
-    (loop :with ord = (lambda (a b) (member b (gethash a table)))
-          :with sorted = nil
-          :for line :in (pre:split "\\n" lines)
-          :for unsorted = nil
-          :do (pre:do-matches-as-strings (a "\\d+" line)
-                (push (parse-integer a) unsorted))
-              (setf sorted (sort (copy-seq unsorted) ord))
-          :if (equal unsorted sorted)
-            :sum (nth (floor (length unsorted) 2) unsorted) :into part1
-          :else
-            :sum (nth (floor (length sorted) 2) sorted) :into part2
-          :finally (return (values part1 part2)))))
+    (let ((ord (lambda (a b) (member b (gethash a table))))
+          (part1 0)
+          (part2 0))
+      (pre:do-matches-as-strings (line ".*\\n" lines nil :sharedp t)
+        (let ((sorted nil)
+              (unsorted nil))
+          (pre:do-matches-as-strings (a "\\d+" line)
+            (push (parse-integer a) unsorted))
+          (setf sorted (sort (copy-seq unsorted) ord))
+          (if (equal unsorted sorted)
+              (incf part1 (nth (floor (length unsorted) 2) unsorted))
+              (incf part2 (nth (floor (length sorted) 2) sorted)))))
+      (values part1 part2))))
