@@ -8,7 +8,7 @@ SetDirectory[NotebookDirectory[]];
 
 
 {rs, lines} = SequenceSplit[ToExpression/@Import["../input/5.txt", "Data"],{{}}];
-ord[a_, b_] := ord[a, b] = Not@MemberQ[rs, {b|a}];
+ord[a_, b_] := ord[a, b] = Not@MemberQ[rs, {_[b, a]}];
 
 
 (* ::Subsection:: *)
