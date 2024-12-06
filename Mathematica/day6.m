@@ -9,12 +9,12 @@ SetDirectory[NotebookDirectory[]];
 
 input=Characters@ReadList["../input/6.txt", "String"];
 obs = Complex@@@Position[input, "#"];
-start=Complex@@FirstPosition[input, "^"] -> -1;
+start = Complex@@FirstPosition[input, "^"] -> -1;
 
 
 floorQ[p_ -> d_] := {1, 1} \[VectorLessEqual] ReIm[p+d] \[VectorLessEqual] Dimensions[input];
 obsQ[p_,d_] := MemberQ[obs, p+d];
-walk[p_->d_] := If[obsQ[p, d] ,p->d*-I, p+d -> d];
+walk[p_->d_] := If[obsQ[p, d], p -> d*-I, p+d -> d];
 
 
 (* ::Subsection:: *)
@@ -29,11 +29,11 @@ Length[<|path|>]
 (*Part 2*)
 
 
-loopQ[ob_]:= Catch@Block[{obs=Append[obs, ob], obsQ},
-	obsQ[p_, d_] := If[MemberQ[obs, p+d],
-		(obsQ[p, d] := Throw[True]);True,
-		obsQ[p, d] = False];
-	NestWhile[walk, start, floorQ];
+loopQ[pos_ -> dir_] := Catch@Block[{obs = Append[obs, pos+dir], obsQ},
+	obsQ[p_,d_] := If[MemberQ[obs, p+d],
+		(obsQ[p,d] := Throw[True]); True,
+		obsQ[p,d] = False];
+	NestWhile[walk, pos -> dir, floorQ];
 	False];
 
 
@@ -41,4 +41,4 @@ loopQ[ob_]:= Catch@Block[{obs=Append[obs, ob], obsQ},
 (*It's the CPU's Problem Now*)
 
 
-Parallelize[loopQ /@ DeleteDuplicates[Plus@@#& /@ path]] // Count[True]
+Parallelize[loopQ /@ DeleteDuplicatesBy[path, Plus@@#&]] // Count[True]
