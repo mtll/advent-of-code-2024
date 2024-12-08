@@ -298,18 +298,6 @@ Overrides :macro option"
        (and (null (car list))
             (null (cdr list)))))))
 
-(defun scan-hash-values (hash-table)
-  (declare (optimizable-series-function 1))
-  (mapping (((k v) (scan-hash hash-table)))
-    (declare (ignore k))
-    v))
-
-(defun scan-hash-keys (hash-table)
-  (declare (optimizable-series-function 1))
-  (mapping (((k v) (scan-hash hash-table)))
-    (declare (ignore v))
-    k))
-
 (defun scan-re-groups (regex string &optional (start 0) end)
   (declare (optimizable-series-function 1))
   (let ((s (pre:create-scanner regex))
