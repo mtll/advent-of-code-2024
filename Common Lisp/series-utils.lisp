@@ -34,25 +34,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Additional reader macros
 
-(defun parse-lambda-list-var (var)
-  (loop for v = var :then (car v)
-        :while (listp v)
-        :finally (return v)))
+(defun parse-lambda-list-vars (lambda-list)
+  (loop :for sym :in (a:flatten lambda-list)
+        :unless (member sym '(&optional &rest &key &whole &aux &environment))
+          :collect sym))
 
 (defun |#D-reader| (stream subchar arg)
   (declare (ignore subchar arg))
   (let* ((form (read stream))
-         (lambda-list (car form))
-         (series (cadr form))
-         (vars (if (a:proper-list-p lambda-list)
-                   (mapcar #'parse-lambda-list-var
-                           (remove-if (op (member _1 lambda-list-keywords))
-                                      lambda-list))
-                   (loop :for cons :on lambda-list
-                         :while (consp (cdr cons))
-                         :collect (car cons) :into result
-                         :finally (return (nconc result (list (car cons)
-                                                              (cdr cons))))))))
+         (lambda-list (pop form))
+         (series (pop form))
+         (vars (parse-lambda-list-vars lambda-list)))
     `(,vars (map-fn '(values ,@(loop :repeat (length vars) :collect t))
                     (lambda (e)
                       (destructuring-bind ,lambda-list e
@@ -275,7 +267,6 @@ Overrides :macro option"
 
 (defun scan-subscripts (dimensions)
   (declare (optimizable-series-function 1))
-  ;; (let ((partials (s:scan #'* dimensions))))
   (map-fn 'list
           (lambda (i)
             (loop :for dim :in dimensions
