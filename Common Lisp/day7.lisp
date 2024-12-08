@@ -14,7 +14,7 @@
   (multiple-value-bind (q r) (floor a b)
     (if (= r 0) q -1)))
 
-(defun deconcat (a b)
+(defun decat (a b)
   (multiple-value-bind (q r)
       (floor a (expt 10 (1+ (floor (log b 10)))))
     (if (= r b) q -1)))
@@ -24,13 +24,12 @@
     ((< val 0) nil)
     ((= val 0) (not nums))
     (nums
-     (some (lambda (op)
-             (true-p (funcall op val (car nums)) (cdr nums) ops))
-           ops))))
+     (loop :for op :in ops
+           :thereis (true-p (funcall op val (car nums)) (cdr nums) ops)))))
 
 (defun solve (path)
   (loop :with ops1 = (list #'detimes #'-)
-        :with ops2 = (list #'deconcat #'detimes #'-)
+        :with ops2 = (list #'decat #'detimes #'-)
         :for (val . nums) :in (parse path)
         :when (true-p val (reverse nums) ops1) :sum val :into part1
         :when (true-p val (reverse nums) ops2) :sum val :into part2

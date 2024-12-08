@@ -15,4 +15,5 @@
                (:file "utils")
                (:file "day2")
                (:file "day3")
-               (:file "day5")))
+               (:file "day5")
+               (:file "day7")))
