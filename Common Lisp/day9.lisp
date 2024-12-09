@@ -5,23 +5,18 @@
 (in-package #:aoc2024.day9)
 
 (defun parse (path)
-  (loop :with file = 0
-        :for c :across (uiop:read-file-string path)
-        :for n = (- (char-int c) (char-int #\0))
+  (loop :for c :across (uiop:read-file-string path)
+        :for n = (digit-char-p c) :while n
         :for empty = nil :then (not empty)
-        :when (> n 0)
-          :nconc (prog1
-                   (loop :repeat n
-                         :with i = (if empty -1 file)
-                         :collect i)
-                   (unless empty (incf file)))
-            :into init
+        :for file = 0 :then (if empty file (1+ file))
+        :nconc (loop :with i = (if empty -1 file) repeat n :collect i)
+          :into init
         :finally (return (make-array (length init)
                                      :element-type '(signed-byte 16)
                                      :initial-contents init))))
 
 (defun checksum (arr)
-  (loop :for i :from 0 :below (length arr)
+  (loop :for i :from 0
         :for n :across arr
         :when (> n 0) :sum (* n i)))
 
@@ -76,16 +71,16 @@
                      (insert-empty empty-ptrs (- to-len len) (+ to len))))))
 
 (defun part2 (disk)
-  (let ((arr (copy-seq disk)))
-    (loop :with empty = (empty-ptrs arr)
-          :for file :downfrom (find-if (lambda (n) (/= n -1)) arr :from-end t)
-            :downto 1
-          :for end = (position file arr :from-end t)
-            :then (position file arr :from-end t :end (1+ start))
-          :for start = (position-if (lambda (n) (/= n file)) arr
-                                    :from-end t :end (1+ end))
-          :do (move-file arr empty (- end start) (1+ start))
-          :finally (return (checksum arr)))))
+  (loop :with arr = (copy-seq disk)
+        :with empty = (empty-ptrs arr)
+        :for file :downfrom (find-if (lambda (n) (/= n -1)) arr :from-end t)
+        :downto 1
+        :for end = (position file arr :from-end t)
+          :then (position file arr :from-end t :end (1+ start))
+        :for start = (position-if (lambda (n) (/= n file)) arr
+                                  :from-end t :end (1+ end))
+        :do (move-file arr empty (- end start) (1+ start))
+        :finally (return (checksum arr))))
 
 (defun solve (path)
   (let ((disk (parse path)))
