@@ -9,7 +9,6 @@
                :cl-ppcre
                :series
                :named-readtables
-               :cl-interpol
                :defpackage-plus)
   :components ((:file "series-utils")
                (:file "utils")
@@ -19,4 +18,5 @@
                (:file "day7")
                (:file "day8")
                (:file "day9")
-               (:file "day10")))
+               (:file "day10")
+               (:file "day12")))

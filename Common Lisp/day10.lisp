@@ -30,7 +30,7 @@
         :if (= curr 9)
           :sum 1
         :else :do
-            (loop :for (rn . cn) :in (vn-nhd map r c)
+            (loop :for (rn cn) :in (vn-nhd map r c)
                   :when (= (1+ curr) (aref map rn cn))
                     :do (push (cons rn cn) stack))
         :do (setf (aref map r c) -1)))
@@ -43,7 +43,7 @@
         :if (= curr 9)
           :sum 1
         :else :do
-          (loop :for (rn . cn) :in (vn-nhd map r c)
+          (loop :for (rn cn) :in (vn-nhd map r c)
                 :when (= (1+ curr) (aref map rn cn))
                   :do (push (cons rn cn) stack))))
 
