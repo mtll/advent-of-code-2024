@@ -13,7 +13,7 @@ input = Partition[#, 3]&@
 
 
 p[{a_, b_, p_}] :=
-	Solve[x*a+y*b==p, {x, y}, Integers] /. {(x -> n_) :> 3*n, (y -> n_) :> n}
+	Quiet@MinValue[{{3, 1} . {x, y}, x*a+y*b==p}, {x, y}, Integers] /. \[Infinity] -> 0
 
 
 (* ::Subsection:: *)
