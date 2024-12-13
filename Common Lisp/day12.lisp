@@ -18,11 +18,9 @@
 
 (defun corner-sides (map r c)
   (loop :with curr = (abs (aref map r c))
-        :for corner :in '((( 0 -1) (-1 -1) (-1  0))
-                          ((-1  0) (-1  1) ( 0  1))
-                          (( 1  0) ( 1  1) ( 0  1))
-                          (( 1  0) ( 1 -1) ( 0 -1)))
-        :for (x y z) = (s:mapply (s:op (abs (aref map (+ _ r) (+ _ c)))) corner)
+        :with (ul u ur l r dl d dr)
+          = (s:mapply (s:op (abs (aref map _ _))) (moore-nhd map r c))
+        :for (x y z) :in `((,l ,ul ,u) (,u ,ur ,r) (,r ,dr ,d) (,d ,dl ,l))
         :count (or (and (/= x curr) (/= z curr))
                    (and (/= y curr) (= x z curr)))))
 
@@ -30,7 +28,7 @@
   (loop :with stack = (list (list row col)) :while stack
         :with region = (prog1 (aref map row col)
                          (setf (aref map row col) (- (aref map row col))))
-        :for area :from 0
+        :for area :from 1
         :for (r c) = (pop stack)
         :sum (loop :for (rn cn) :in (vn-nhd map r c)
                    :if (= region (aref map rn cn))
@@ -50,4 +48,3 @@
           (multiple-value-bind (p1 p2) (apply #'fence map point)
             (next-out part1 p1)
             (next-out part2 p2)))))))
-
