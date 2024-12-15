@@ -21,7 +21,8 @@
            #:split-lambda-list
            #:defun/type
            #:defun/type/inln
-           #:defun/inln))
+           #:defun/inln
+           #:list-to-array))
 
 (in-package #:aoc.utils)
 
@@ -236,3 +237,10 @@
   `(progn
      (declaim (inline ,name))
      (defun/type ,name ,typed-lambda-list ,return-type ,@body)))
+
+(defun list-to-array (list &optional (element-type t))
+  (make-array (loop :for l = list :then (car l)
+                    :while (listp l)
+                    :collect (length l))
+              :element-type element-type
+              :initial-contents list))
