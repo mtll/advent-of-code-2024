@@ -237,9 +237,9 @@
 (defun string2d (string &optional rules)
   (list-to-array
    (loop :for line :in (pre:split "\\n" string)
-         :collect (loop :for char :across line
-                        :collect (or (cdr (assoc char rules))
-                                     char)))
+         :collect (a:flatten (loop :for char :across line
+                                   :collect (or (cdr (assoc char rules))
+                                                char))))
    'character))
 
 (defun array-positions (array item &key (test #'eql))
