@@ -1,15 +1,14 @@
 (defpackage-plus-1:defpackage+ #:aoc.utils
-  (:use #:cl)
+  (:use #:cl #:series-utils)
   (:import-from #:serapeum #:op)
   (:local-nicknames (#:a #:alexandria-2)
-                    (#:s #:serapeum))
+                    (#:s #:serapeum)
+                    (#:pre #:cl-ppcre))
   (:export #:~>
            #:~>>
            #:call
            #:abbr
            #:if-let*
-           #:mvlet
-           #:mvlet*
            #:unordered-removef
            #:unordered-removef-pos
            #:vn-nhd
@@ -22,7 +21,9 @@
            #:defun/type
            #:defun/type/inln
            #:defun/inln
-           #:list-to-array))
+           #:list-to-array
+           #:string2d
+           #:array-positions))
 
 (in-package #:aoc.utils)
 
@@ -92,18 +93,6 @@
                      (setf apply nil))
                     (t (push arg parsed))))
     `(multiple-value-call ,fn ,@(reverse parsed))))
-
-(defmacro mvlet* (let-forms &body body)
-  `(s:mvlet* ,(collect 'list
-                (mapping ((form (scan let-forms)))
-                  `(,@(a:ensure-list (car form)) ,@(cdr form))))
-     ,@body))
-
-(defmacro mvlet (let-forms &body body)
-  `(s:mvlet ,(collect 'list
-               (mapping ((form (scan let-forms)))
-                 `(,@(a:ensure-list (car form)) ,@(cdr form))))
-     ,@body))
 
 (defun unordered-removef (item vector &key (test #'eql))
   (a:if-let ((pos (position item vector :test test)))
@@ -244,3 +233,17 @@
                     :collect (length l))
               :element-type element-type
               :initial-contents list))
+
+(defun string2d (string &optional rules)
+  (list-to-array
+   (loop :for line :in (pre:split "\\n" string)
+         :collect (loop :for char :across line
+                        :collect (or (cdr (assoc char rules))
+                                     char)))
+   'character))
+
+(defun array-positions (array item &key (test #'eql))
+  (gathering ((ps collect))
+    (iterate ((pt (scan-subscripts (array-dimensions array))))
+      (when (funcall test item (apply #'aref array pt))
+        (next-out ps pt)))))
