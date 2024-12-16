@@ -25,14 +25,14 @@
            (#\v (next-out path '(1 0)))
            (#\^ (next-out path '(-1 0)))))))))
 
-(defun move (map pos dir &aux (next (mapcar #'+ pos dir))
+(defun walk (map pos dir &aux (next (mapcar #'+ pos dir))
                            (column (/= 0 (car dir))))
   (labels ((parents (pt &aux (next (mapcar #'+ pt dir)))
              (case (apply #'aref map next)
                (#\[ `(,next ,@(when column `(,(mapcar #'+ next '(0 1))))))
                (#\] `(,next ,@(when column `(,(mapcar #'+ next '(0 -1))))))
                (#\O (list next))
-               (#\# (return-from move pos))))
+               (#\# (return-from walk pos))))
            (bfs (pts)
              (when pts
                (bfs (delete-duplicates (mapcan #'parents pts) :test #'equal))
@@ -42,7 +42,7 @@
     (bfs (list pos))))
 
 (defun walk-path (map start path)
-  (loop :for point = start :then (move map point move)
+  (loop :for point = start :then (walk map point move)
         :for move :in path
         :finally (return map)))
 
