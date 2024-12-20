@@ -12,10 +12,12 @@ towels = input[[1]];
 patterns = Flatten@input[[2;;]];
 
 
-arrange[""] = 1;
-arrange[str_] := arrange[str] = 
-    Fold[#1 + arrange[StringTrim[str, StartOfString~~#2]]&,
-         0, Select[towels, StringStartsQ[str, #]&]];
+Clear[cover];
+cover[c_, len_, _] := 1 /; c == len;
+cover[c_, len_, is_] := cover[c, len, is] = 
+    Total[cover[#, len, is]& /@ Lookup[is, c + 1, {}]]
+arrange[pat_] := Merge[Rule@@@StringPosition[pat, towels], Identity] // 
+    cover[0, StringLength[pat], #]&
 
 
 (* ::Subsection:: *)
