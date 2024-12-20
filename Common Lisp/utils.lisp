@@ -23,7 +23,11 @@
            #:defun/inln
            #:list-to-array
            #:string2d
-           #:array-positions))
+           #:array-positions
+           #:array-positions-if
+           #:repeated
+           #:nhd
+           #:taxicab-distance))
 
 (in-package #:aoc.utils)
 
@@ -247,3 +251,30 @@
     (iterate ((pt (scan-subscripts (array-dimensions array))))
       (when (funcall test item (apply #'aref array pt))
         (next-out ps pt)))))
+
+(defun array-positions-if (array predicate)
+  (gathering ((ps collect))
+    (iterate ((pt (scan-subscripts (array-dimensions array))))
+      (when (funcall predicate (apply #'aref array pt))
+        (next-out ps pt)))))
+
+(defun repeated (item n)
+  (if (functionp item)
+      (loop :repeat n :collect (funcall item))
+      (loop :repeat n :collect item)))
+
+(defun taxicab-distance (a b)
+  (collect-sum
+   (mapping ((p1 (scan a))
+             (p2 (scan b)))
+     (abs (- p1 p2)))))
+
+(defun nhd (array point distance &optional (norm #'taxicab-distance))
+  (gathering ((pts collect))
+    (iterate ((new (scan-subscripts (repeated (1+ (* 2 distance))
+                                              (array-rank array))
+                                    (mapcar (a:rcurry #'- distance) point))))
+      (when (and (<= (funcall norm point new) distance)
+                 (apply #'array-in-bounds-p array new)
+                 (not (equal new point)))
+        (next-out pts new)))))

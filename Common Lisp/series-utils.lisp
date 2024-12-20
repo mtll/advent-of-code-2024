@@ -265,15 +265,20 @@ Overrides :macro option"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Scanners
 
-(defun scan-subscripts (dimensions)
+(defun scan-subscripts (dimensions &optional (offsets 0))
   (declare (optimizable-series-function 1))
-  (map-fn 'list
-          (lambda (i)
-            (loop :for dim :in dimensions
-                  :for coord = (mod i dim)
-                  :do (setf i (floor i dim))
-                  :collect coord))
-          (scan-range :below (reduce #'* dimensions))))
+  (let ((offsets (if (listp offsets)
+                     offsets
+                     (loop :repeat (length dimensions)
+                           :collect offsets))))
+    (map-fn 'list
+            (lambda (i)
+              (loop :for dim :in dimensions
+                    :for offset :in offsets
+                    :for coord = (mod i dim)
+                    :do (setf i (floor i dim))
+                    :collect (+ offset coord)))
+            (scan-range :below (reduce #'* dimensions)))))
 
 (defun scan-flattened (list)
   (declare (optimizable-series-function 1))
