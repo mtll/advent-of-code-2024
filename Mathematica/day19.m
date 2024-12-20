@@ -12,13 +12,11 @@ towels = input[[1]];
 patterns = Flatten@input[[2;;]];
 
 
-arrange[g_Graph, end_] := 0 /; GraphDistance[g, 1, end] == \[Infinity];
-arrange[g_Graph, end_] := Module[{mat = AdjacencyMatrix[g]},
-    Total[NestList[mat . #&, mat, end - 1][[All, 1, end]]]];
-arrange[pat_] := Module[{vs, es, len = StringLength[pat] + 1},
-    vs = Range[1, len];
-    es = Rule@@@(StringPosition[pat, towels] + Threaded@{0,1});
-    arrange[Graph[vs, es], len]]
+arrange[g_Graph] := 0 /; GraphDistance[g, 1, VertexCount[g]] == \[Infinity];
+arrange[g_Graph] := Module[{mat = AdjacencyMatrix[g]},
+    Total[NestList[mat . #&, mat, Length[mat] - 1][[All, 1, -1]]]];
+arrange[pat_String] := Module[{vs = Range[1, StringLength[pat] + 1]},
+    arrange[Graph[vs, Rule@@@(StringPosition[pat, towels] + Threaded@{0, 1})]]]
 
 
 (* ::Subsection:: *)
